@@ -36,38 +36,40 @@ const columns = [
 ];
 
 
-const getDetails = async (): Promise<Detail[]> => {
-    const response = await fetch('/api/details')
+const getDetails = async (owner: string): Promise<Detail[]> => {
+    const response = await fetch('/api/details/' + owner)
     if (!response.ok) {
         throw new Error('Failed to fetch details')
     }
     return response.json()
 }
 
-export default function TableData() {
+export default function TableData({ owner }: { owner: string }) {
     const [details, setDetails] = useState<Detail[]>([])
 
     useEffect(() => {
         const loadDetails = async () => {
             try {
-                const data = await getDetails()
-                const formattedData = data.map((item: Detail) => ({
-                    ...item,
-                    date: new Date(item.date).toISOString().split('T')[0],
-                    time: new Date(item.date).toLocaleTimeString('en-US', {
-                        hour12: false,
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })
-                }));
-                setDetails(formattedData)
+                if (owner !== 'Anonymous') {
+                    const data = await getDetails(owner)
+                    const formattedData = data.map((item: Detail) => ({
+                        ...item,
+                        date: new Date(item.date).toISOString().split('T')[0],
+                        time: new Date(item.date).toLocaleTimeString('en-US', {
+                            hour12: false,
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })
+                    }));
+                    setDetails(formattedData)
+                }
             } catch (error) {
                 console.error('Error loading details:', error)
             }
         }
 
         loadDetails()
-    }, [])
+    }, [owner])
 
     return (
         <Table aria-label="Example table with dynamic content">

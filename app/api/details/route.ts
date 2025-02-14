@@ -35,6 +35,7 @@ export async function POST(request: Request) {
 
         const todayRecords = await prisma.detail.findMany({
             where: {
+                owner ,
                 date: {
                     gte: today,
                     lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)

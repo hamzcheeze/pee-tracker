@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
+  const owner = session?.user?.email || 'Anonymous';
 
   const handleAddDetail = async () => {
     try {
@@ -15,7 +16,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          owner: session?.user?.name || 'Anonymous'
+          owner: session?.user?.email || 'Anonymous'
         })
       });
 
@@ -41,7 +42,7 @@ export default function Home() {
           Add
         </Button>
       </div>
-      <TableData />
+      <TableData owner={owner}/>
     </div>
   );
 }
