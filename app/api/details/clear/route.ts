@@ -6,7 +6,7 @@ export async function DELETE() {
     const headersList = headers()
     const password = (await headersList).get('x-password')
 
-    if (!password || password !== "jidjoi1234") {
+    if (!password || password !== process.env.DELETE_PASSWORD) {
         return NextResponse.json(
             { error: 'Unauthorized' },
             { status: 401 }

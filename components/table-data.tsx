@@ -10,6 +10,7 @@ import {
     TableCell,
     Spinner,
     getKeyValue,
+    Skeleton,
 } from "@heroui/react";
 
 interface Detail {
@@ -40,6 +41,19 @@ const columns = [
     },
 ];
 
+const renderSkeleton = () => (
+    <>
+        {Array(5).fill(0).map((_, index) => (
+            <TableRow key={`skeleton-${index}`}>
+                {Array(3).fill(0).map((_, cellIndex) => (
+                    <TableCell key={`cell-${index}-${cellIndex}`}>
+                        <Skeleton className="w-full h-8 rounded-lg" />
+                    </TableCell>
+                ))}
+            </TableRow>
+        ))}
+    </>
+);
 
 const getDetails = async (owner: string): Promise<Detail[]> => {
     const response = await fetch('/api/details/' + owner)
@@ -87,19 +101,19 @@ export default function TableData({ owner, refreshTrigger }: TableDataProps) {
                     <TableColumn key={column.key}>{column.label}</TableColumn>
                 )}
             </TableHeader>
-            <TableBody
-                isLoading={isLoading}
-                items={details}
-                loadingContent={<Spinner label="Loading..." />}
-            >
-                {(item: Detail) => (
-                    <TableRow key={item.id}>
-                        {(columnKey) => (
-                            <TableCell>
-                                {getKeyValue(item, columnKey)}
-                            </TableCell>
-                        )}
-                    </TableRow>
+            <TableBody>
+                {isLoading ? (
+                    renderSkeleton()
+                ) : (
+                    details.map((item: Detail) => (
+                        <TableRow key={item.id}>
+                            {(columnKey) => (
+                                <TableCell>
+                                    {getKeyValue(item, columnKey)}
+                                </TableCell>
+                            )}
+                        </TableRow>
+                    ))
                 )}
             </TableBody>
         </Table>
