@@ -20,6 +20,11 @@ interface Detail {
     owner: string;
 }
 
+interface TableDataProps {
+    owner: string;
+    refreshTrigger: number;
+}
+
 const columns = [
     {
         key: "date",
@@ -44,11 +49,13 @@ const getDetails = async (owner: string): Promise<Detail[]> => {
     return response.json()
 }
 
-export default function TableData({ owner }: { owner: string }) {
+export default function TableData({ owner, refreshTrigger }: TableDataProps) {
     const [details, setDetails] = useState<Detail[]>([])
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadDetails = async () => {
+            setIsLoading(true);
             try {
                 if (owner !== 'Anonymous') {
                     const data = await getDetails(owner)
@@ -65,23 +72,33 @@ export default function TableData({ owner }: { owner: string }) {
                 }
             } catch (error) {
                 console.error('Error loading details:', error)
+            } finally {
+                setIsLoading(false);
             }
         }
 
         loadDetails()
-    }, [owner])
+    }, [owner, refreshTrigger])
 
     return (
-        <Table aria-label="Example table with dynamic content">
+        <Table aria-label="Pee Data">
             <TableHeader>
                 {columns.map((column) =>
                     <TableColumn key={column.key}>{column.label}</TableColumn>
                 )}
             </TableHeader>
-            <TableBody>
-                {details.map((row) =>
-                    <TableRow key={row.id}>
-                        {(columnKey) => <TableCell>{getKeyValue(row, columnKey)}</TableCell>}
+            <TableBody
+                isLoading={isLoading}
+                items={details}
+                loadingContent={<Spinner label="Loading..." />}
+            >
+                {(item: Detail) => (
+                    <TableRow key={item.id}>
+                        {(columnKey) => (
+                            <TableCell>
+                                {getKeyValue(item, columnKey)}
+                            </TableCell>
+                        )}
                     </TableRow>
                 )}
             </TableBody>

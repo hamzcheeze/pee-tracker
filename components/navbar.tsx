@@ -108,7 +108,7 @@ export const Navbar = () => {
                   key="logout"
                   color="danger"
                   onPress={() => signOut()}>
-                  <p className="text-red-500">Log Out</p>
+                  <p className="text-red-600">Log Out</p>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -153,7 +153,7 @@ export const Navbar = () => {
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                className="mb-2 w-full text-red-500"
+                className="mb-2 w-full text-red-600"
                 href={item.href}
                 size="md"
               >

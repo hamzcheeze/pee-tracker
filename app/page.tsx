@@ -3,12 +3,16 @@
 import TableData from "@/components/table-data";
 import { Button } from "@heroui/react";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { data: session } = useSession();
   const owner = session?.user?.email || 'Anonymous';
 
   const handleAddDetail = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch('/api/details', {
         method: 'POST',
@@ -24,9 +28,12 @@ export default function Home() {
         throw new Error('Failed to add detail');
       }
 
-      window.location.reload();
+      // Increment refresh trigger to cause TableData to reload
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error('Error adding detail:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,11 +45,15 @@ export default function Home() {
           color="primary"
           radius="lg"
           onPress={handleAddDetail}
+          isLoading={isLoading}
         >
           Add
         </Button>
       </div>
-      <TableData owner={owner}/>
+      <TableData
+        owner={owner}
+        refreshTrigger={refreshTrigger}
+      />
     </div>
   );
 }
