@@ -2,6 +2,13 @@
 
 import { prisma } from '@/prisma/connector'
 import { NextResponse } from 'next/server'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+// Configure dayjs with plugins
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export async function GET() {
     try {
@@ -30,15 +37,25 @@ export async function POST(request: Request) {
     try {
         const { owner } = await request.json()
 
-        const now = new Date()
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const bkkNow = dayjs().tz("Asia/Bangkok")
+        const bkkTime = bkkNow.format('HH:mm:ss')
+        const bkkDateTime = bkkNow.format('YYYY-MM-DD HH:mm:ss')
+        const bkkStartDay = bkkNow
+            .startOf('day')
+            .format('YYYY-MM-DD HH:mm:ss')
+        const bkkEndday = bkkNow
+            .endOf('day')
+            .format('YYYY-MM-DD HH:mm:ss')
+
+        // console.log('bkkStartDay = ', bkkStartDay)
+        // console.log('bkkEndday = ', bkkEndday)
 
         const todayRecords = await prisma.detail.findMany({
             where: {
-                owner ,
+                owner,
                 date: {
-                    gte: today,
-                    lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+                    gte: bkkStartDay,
+                    lte: bkkEndday
                 }
             },
             orderBy: {
@@ -46,14 +63,17 @@ export async function POST(request: Request) {
             }
         })
 
+        // console.log("=============")
+        // console.log(todayRecords)
+
         const count = todayRecords.length > 0
             ? Math.max(...todayRecords.map(record => record.count)) + 1
             : 1
 
         const detail = await prisma.detail.create({
             data: {
-                time: now.toLocaleTimeString(),
-                date: now,
+                time: bkkTime,
+                date: bkkDateTime,
                 owner: owner,
                 count: count
             }

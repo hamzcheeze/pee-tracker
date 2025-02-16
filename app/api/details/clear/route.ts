@@ -15,7 +15,6 @@ export async function DELETE() {
 
     try {
         await prisma.detail.deleteMany({})
-
         return NextResponse.json({
             message: 'All data has been cleared successfully'
         })
