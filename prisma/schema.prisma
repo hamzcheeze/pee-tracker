@@ -13,7 +13,7 @@ datasource db {
 model Detail {
   id    Int      @id @default(autoincrement())
   time  String
-  date  DateTime
+  date  String
   owner String
   count Int
 }
