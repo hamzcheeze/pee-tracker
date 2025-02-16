@@ -74,7 +74,7 @@ export default function TableData({ owner, refreshTrigger }: TableDataProps) {
                     const data = await getDetails(owner)
                     const formattedData = data.map((item: Detail) => ({
                         ...item,
-                        date: new Date(item.date).toISOString().split('T')[0],
+                        date: item.date.split(' ')[0],
                         time: new Date(item.date).toLocaleTimeString('th-TH', {
                             hour12: false,
                             hour: '2-digit',
