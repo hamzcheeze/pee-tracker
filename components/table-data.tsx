@@ -8,7 +8,6 @@ import {
     TableBody,
     TableRow,
     TableCell,
-    Spinner,
     getKeyValue,
     Skeleton,
 } from "@heroui/react";
@@ -76,7 +75,7 @@ export default function TableData({ owner, refreshTrigger }: TableDataProps) {
                     const formattedData = data.map((item: Detail) => ({
                         ...item,
                         date: new Date(item.date).toISOString().split('T')[0],
-                        time: new Date(item.date).toLocaleTimeString('en-US', {
+                        time: new Date(item.date).toLocaleTimeString('th-TH', {
                             hour12: false,
                             hour: '2-digit',
                             minute: '2-digit'
@@ -98,7 +97,9 @@ export default function TableData({ owner, refreshTrigger }: TableDataProps) {
         <Table aria-label="Pee Data">
             <TableHeader>
                 {columns.map((column) =>
-                    <TableColumn key={column.key}>{column.label}</TableColumn>
+                    <TableColumn key={column.key}>
+                        {column.label}
+                    </TableColumn>
                 )}
             </TableHeader>
             <TableBody>
